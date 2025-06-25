@@ -1,5 +1,18 @@
-export const userRegister = (req, res) => {
-  res.status(201).send("user created");
+import User from "../models/User.js";
+import crypto from "node:crypto";
+
+export const userRegister = async (req, res) => {
+  try {
+    const crateUser = {
+      id: crypto.randomUUID(),
+      ...req.body,
+    };
+
+    const newUser = await User.create(crateUser);
+    res.status(201).send(newUser);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 };
 
 export const userLogin = (req, res) => {

@@ -1,16 +1,14 @@
 import express from "express";
 import userRouter from "./routes.js";
+import { connectToDatabase } from "./config/database.js";
+import "dotenv/config";
 
 const app = express();
-
 app.use(express.json());
-
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-});
-
 app.use("/users", userRouter);
 
-app.get("/", (req, res) => {
-  res.send("pagina de inicio");
-});
+connectToDatabase().then(() =>
+  app.listen(process.env.APP_PORT, () =>
+    console.log("Server running on port 3000")
+  )
+);
