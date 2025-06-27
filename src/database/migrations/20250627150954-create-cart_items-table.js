@@ -3,28 +3,40 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("users", {
+    await queryInterface.createTable("cart_items", {
       id: {
         type: Sequelize.UUID,
         allowNull: false,
-        primaryKey: true,
         defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
       },
-      name: {
-        type: Sequelize.STRING,
+      cartId: {
+        type: Sequelize.UUID,
         allowNull: false,
+        references: {
+          model: "carts",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      age: {
+      productId: {
+        type: Sequelize.UUID, // <-- alterado de INTEGER para UUID para bater com a tabela `products`
+        allowNull: false,
+        references: {
+          model: "products",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
+      quantity: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        defaultValue: 1,
       },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
-        type: Sequelize.STRING,
+      price: {
+        type: Sequelize.FLOAT,
         allowNull: false,
       },
       created_at: {
@@ -41,6 +53,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("users");
+    await queryInterface.dropTable("cart_items");
   },
 };

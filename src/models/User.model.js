@@ -4,6 +4,12 @@ class User extends Model {
   static init(sequelize) {
     super.init(
       {
+        id: {
+          type: Sequelize.UUID,
+          allowNull: false,
+          defaultValue: Sequelize.UUIDV4,
+          primaryKey: true,
+        },
         name: {
           type: Sequelize.STRING,
           allowNull: false,
@@ -33,8 +39,23 @@ class User extends Model {
       },
       {
         sequelize,
+        tableName: "users", // define o nome da tabela explicitamente
       }
     );
+  }
+
+  static associate(models) {
+    // Um usuário pode ter vários carrinhos
+    this.hasMany(models.Cart, {
+      foreignKey: "userId",
+      as: "carts",
+    });
+
+    // Um usuário pode ter vários endereços
+    this.hasMany(models.Address, {
+      foreignKey: "userId",
+      as: "addresses",
+    });
   }
 }
 
