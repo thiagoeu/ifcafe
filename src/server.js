@@ -1,5 +1,5 @@
 import express from "express";
-import userRouter from "./routes.js";
+import userRouter from "./routes/user.route.js";
 import morgan from "morgan";
 import helmet from "helmet";
 import { connectToDatabase } from "./utils/connectDB.js";
