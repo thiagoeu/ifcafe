@@ -1,11 +1,11 @@
 import { Sequelize } from "sequelize";
 import config from "../config/database.js";
 
-import User from "../models/User.model.js";
-import Cart from "../models/Cart.model.js";
-import Address from "../models/Address.model.js";
-import Product from "../models/Product.model.js";
-import CartItem from "../models/CartItem.model.js";
+import User from "./User.model.js";
+import Cart from "./Cart.model.js";
+import Address from "./Address.model.js";
+import Product from "./Product.model.js";
+import CartItem from "./CartItem.model.js";
 
 const sequelize = new Sequelize(config);
 
