@@ -2,6 +2,7 @@ import models from "../models/index.js";
 import bcrypt from "bcrypt";
 
 import generatedAccessToken from "../utils/generateAcessToken.js";
+import generatedRefreshToken from "../utils/refreshAcessToken.js";
 
 export const userRegister = async (req, res) => {
   try {
@@ -55,7 +56,7 @@ export const userRegister = async (req, res) => {
   }
 };
 
-export const userLogin = (req, res) => {
+export const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -67,7 +68,7 @@ export const userLogin = (req, res) => {
       });
     }
 
-    const user = models.User.findOne({ where: { email } });
+    const user = await models.User.findOne({ where: { email } });
 
     if (!user) {
       return res.status(404).json({
@@ -77,7 +78,7 @@ export const userLogin = (req, res) => {
       });
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    const isPasswordValid = await bcrypt.compareSync(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -86,7 +87,30 @@ export const userLogin = (req, res) => {
         message: "Invalid password",
       });
     }
+
+    const accessToken = await generatedAccessToken(user.id);
+    const refreshToken = await generatedRefreshToken(user.id);
+
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    };
+
+    res.cookie("acessToken", accessToken, cookieOptions);
+    res.cookie("refreshToken", refreshToken, cookieOptions);
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      message: "User logged in successfully",
+      data: {
+        accessToken,
+        refreshToken,
+      },
+    });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       error: true,
       success: false,
@@ -94,8 +118,6 @@ export const userLogin = (req, res) => {
       detail: error.message,
     });
   }
-
-  res.status(200).send("user logged in");
 };
 
 export const userLogout = (req, res) => {
