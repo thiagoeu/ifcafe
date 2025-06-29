@@ -19,5 +19,5 @@ app.use("/users", userRouter);
 const PORT = process.env.APP_PORT || 3000;
 
 connectToDatabase().then(() =>
-  app.listen(PORT, () => console.log("Server running on port 3000"))
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 );

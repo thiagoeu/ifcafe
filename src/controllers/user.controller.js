@@ -1,5 +1,7 @@
-import User from "../models/User.model.js";
+import models from "../models/index.js";
 import bcrypt from "bcrypt";
+
+import generatedAccessToken from "../utils/generateAcessToken.js";
 
 export const userRegister = async (req, res) => {
   try {
@@ -15,7 +17,7 @@ export const userRegister = async (req, res) => {
     }
 
     // Verifica se o usuário já existe
-    const userExists = await User.findOne({ where: { email } });
+    const userExists = await models.User.findOne({ where: { email } });
 
     if (userExists) {
       return res.status(409).json({
@@ -35,7 +37,7 @@ export const userRegister = async (req, res) => {
     };
 
     // Cria novo usuário
-    const newUser = await User.create(payload);
+    const newUser = await models.User.create(payload);
 
     return res.status(201).json({
       success: true,
@@ -54,6 +56,45 @@ export const userRegister = async (req, res) => {
 };
 
 export const userLogin = (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        error: true,
+        success: false,
+        message: "email and password are required",
+      });
+    }
+
+    const user = models.User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        error: true,
+        success: false,
+        message: "Invalid password",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      success: false,
+      message: "Internal server error",
+      detail: error.message,
+    });
+  }
+
   res.status(200).send("user logged in");
 };
 
