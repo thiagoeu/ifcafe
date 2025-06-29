@@ -144,6 +144,9 @@ export const userLogout = async (req, res) => {
         success: true,
         error: false,
         message: "User logged out successfully",
+        data: {
+          removeRefreshToken,
+        },
       });
     }
   } catch (error) {

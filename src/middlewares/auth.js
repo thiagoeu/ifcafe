@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 const auth = async (req, res, next) => {
   try {
     const token =
-      req.cookie.accessToken || req?.headers?.authorization?.split(" ")[1];
+      req.cookies.accessToken || req?.headers?.authorization?.split(" ")[1];
     // Obtém o token do cookie ou do header de autorização
 
     if (!token) {
