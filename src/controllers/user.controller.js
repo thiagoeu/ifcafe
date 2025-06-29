@@ -8,23 +8,16 @@ export const userRegister = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Verifica se todos os campos obrigatórios estão presentes
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        error: true,
-        success: false,
-        message: "name, email, age and password are required",
-      });
-    }
-
     // Verifica se o usuário já existe
     const userExists = await models.User.findOne({ where: { email } });
 
     if (userExists) {
       return res.status(409).json({
-        error: true,
         success: false,
-        message: "User already exists",
+        error: {
+          code: "USER_ALREADY_EXISTS",
+          message: "User already exists",
+        },
       });
     }
 

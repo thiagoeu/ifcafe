@@ -1,5 +1,6 @@
 import express from "express";
 import auth from "./../middlewares/auth.js";
+import { validateRegister } from "../validations/user.schema.js";
 import {
   userRegister,
   userGetAll,
@@ -9,7 +10,7 @@ import {
 
 const userRouter = express.Router();
 
-userRouter.post("/register", userRegister);
+userRouter.post("/register", validateRegister, userRegister);
 userRouter.post("/login", userLogin);
 userRouter.post("/logout", auth, userLogout);
 
