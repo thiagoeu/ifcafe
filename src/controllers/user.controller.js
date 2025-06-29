@@ -97,7 +97,7 @@ export const userLogin = async (req, res) => {
       secure: true,
     };
 
-    res.cookie("acessToken", accessToken, cookieOptions);
+    res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
     return res.status(200).json({
@@ -110,18 +110,50 @@ export const userLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       error: true,
       success: false,
-      message: "Internal server error",
+      message: "login error",
       detail: error.message,
     });
   }
 };
 
-export const userLogout = (req, res) => {
-  res.status(200).send("user logged out");
+export const userLogout = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    console.log(userId);
+
+    const cookieOptions = {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    };
+
+    res.clearCookie("accessToken", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
+
+    const removeRefreshToken = await models.User.update(
+      { refresh_token: null },
+      { where: { id: userId } }
+    );
+
+    if (removeRefreshToken) {
+      return res.status(200).json({
+        success: true,
+        error: false,
+        message: "User logged out successfully",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      error: true,
+      success: false,
+      message: "logout error",
+      detail: error.message,
+    });
+  }
 };
 
 export const userDelete = (req, res) => {
